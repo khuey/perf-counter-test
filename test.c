@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <linux/perf_event.h>
+#include <sched.h>
 #include <sys/ioctl.h>
 #include <sys/syscall.h>
 #include <stdint.h>
@@ -44,6 +45,13 @@ void timing_computation() {
 
 int main() {
   int64_t value = -1;
+
+  // Lock to cpu0
+  cpu_set_t mask;
+  CPU_ZERO(&mask);
+  CPU_SET(0, &mask);
+  assert(!sched_setaffinity(0, sizeof(mask), &mask));
+
   while (1) {
     int fd = start_counter();
 
